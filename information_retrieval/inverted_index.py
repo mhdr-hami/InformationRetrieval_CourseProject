@@ -1,6 +1,6 @@
 import pickle as pkl
 import os
-from encoder import UncompressedPostings
+from information_retrieval.encoder import UncompressedPostings
 
 
 class InvertedIndex:

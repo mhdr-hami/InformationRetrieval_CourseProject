@@ -1,8 +1,8 @@
 import contextlib
-from inverted_index import InvertedIndexIterator, InvertedIndexWriter, InvertedIndexMapper
+from information_retrieval.inverted_index import InvertedIndexIterator, InvertedIndexWriter, InvertedIndexMapper
 import pickle as pkl
 import os
-from helper import IdMap
+from information_retrieval.helper import IdMap
 from typing import *
 import glob
 from hazm import *
@@ -68,6 +68,7 @@ class BSBIIndex:
             with InvertedIndexWriter(index_id, directory=self.output_dir,
                                      postings_encoding=
                                      self.postings_encoding) as index:
+
                 self.invert_write(td_pairs, index)
                 td_pairs = None
         self.save()
@@ -79,8 +80,7 @@ class BSBIIndex:
                     InvertedIndexIterator(index_id,
                                           directory=self.output_dir,
                                           postings_encoding=
-                                          self.postings_encoding))
-                    for index_id in self.intermediate_indices]
+                                          self.postings_encoding)) for index_id in self.intermediate_indices]
                 self.merge(indices, merged_index)
 
     def parse_block(self, block_dir_relative):
@@ -106,6 +106,8 @@ class BSBIIndex:
             with open(file_address, 'r', encoding='utf8') as f:
                 doc_id = self.doc_id_map[file_address]
                 tokens = word_tokenize(f.read())
+                tokens = [Normalizer().normalize(token) for token in tokens]
+                # open("log.txt", "w").write(str(tokens))
                 for token in tokens:
                     token_id = self.term_id_map[token]
                     td_pairs.append((token_id, doc_id))
@@ -130,7 +132,7 @@ class BSBIIndex:
                 postings_union[t] = []
             postings_union[t].append(d)
 
-        for t, p in postings_union:
+        for t, p in postings_union.items():
             index.append(t, p)
         # End your code
 
@@ -148,6 +150,15 @@ class BSBIIndex:
         """
         ### Begin your code
 
+        postings_lists = {}
+
+        for index in indices:
+            for term_id, postings in index:
+                if term_id not in postings_lists:
+                    postings_lists[term_id] = []
+                postings_lists[term_id].extend(postings)
+        for term_id, postings in postings_lists.items():
+            merged_index.append(term_id, postings)
         ### End your code
 
     def retrieve(self, query: AnyStr):
@@ -173,7 +184,17 @@ class BSBIIndex:
             self.load()
 
         # Begin your code
-
+        with InvertedIndexMapper(self.index_name, self.postings_encoding, self.output_dir) as final_index:
+            result = set()
+            first_time = True
+            for term in word_tokenize(query):
+                current_result = {self.doc_id_map[doc_id] for doc_id in final_index[self.term_id_map[term]]}
+                if first_time:
+                    result = current_result
+                    first_time = False
+                else:
+                    result = result.intersection(current_result)
+            return list(result)
         # End your code
 
 
