@@ -33,6 +33,8 @@ class BSBIIndex:
 
         # Stores names of intermediate indices
         self.intermediate_indices = []
+        self.index()
+
 
     def save(self):
         """Dumps doc_id_map and term_id_map into output directory"""
@@ -168,7 +170,7 @@ class BSBIIndex:
         """
         # index the docs when the engine starts
         if len(self.term_id_map) == 0 or len(self.doc_id_map) == 0:
-            self.index()
+            self.load()
 
         # Begin your code
 
