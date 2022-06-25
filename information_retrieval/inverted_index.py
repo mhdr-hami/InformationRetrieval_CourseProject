@@ -86,7 +86,7 @@ class InvertedIndexWriter(InvertedIndex):
         self.index_file = open(self.index_file_path, 'wb+')
         return self
 
-    def append(self, term, postings_list):
+    def append(self, term_id, postings_list):
         """Appends the term and postings_list to end of the index file.
 
         This function does three things,
@@ -104,8 +104,8 @@ class InvertedIndexWriter(InvertedIndex):
 
         Parameters
         ----------
-        term:
-            term or termID is the unique identifier for the term
+        term_id:
+            termID is the unique identifier for the term
         postings_list: List[Int]
             List of docIDs where the term appears
         """
@@ -113,11 +113,10 @@ class InvertedIndexWriter(InvertedIndex):
 
         # use the encode func from encoder.py
         encoded_postings = self.postings_encoding.encode(postings_list)
-
-
-
-
-
+        # use index_file.tell() to find the position of the pointer in index file
+        self.postings_dict[term_id] = (self.index_file.tell(), len(postings_list), len(encoded_postings))
+        self.terms.append(term_id)
+        self.index_file.write(encoded_postings)
         # End your code
 
 
@@ -135,7 +134,7 @@ class InvertedIndexIterator(InvertedIndex):
         """Use this function to initialize the iterator
         """
         ### Begin your code
-
+        # already initialized (in parent class)
         ### End your code
 
     def __iter__(self):
@@ -149,7 +148,12 @@ class InvertedIndexIterator(InvertedIndex):
         index file in memory.
         """
         ### Begin your code
+        term_id = self.term_iter.__next__()
+        self.index_file.seek(self.postings_dict[term_id][0])
+        encoded_postings = self.index_file.read(self.postings_dict[term_id][2])
+        postings_list = self.postings_encoding.decode(encoded_postings)
 
+        return term_id, postings_list
         ### End your code
 
     def delete_from_disk(self):
@@ -173,7 +177,7 @@ class InvertedIndexMapper(InvertedIndex):
     def __getitem__(self, key):
         return self._get_postings_list(key)
 
-    def _get_postings_list(self, term):
+    def _get_postings_list(self, term_id):
         """Gets a postings list (of docIds) for `term`.
 
         This function should not iterate through the index file.
@@ -181,5 +185,10 @@ class InvertedIndexMapper(InvertedIndex):
         corresponding to the postings list for the requested term.
         """
         ### Begin your code
+        if term_id not in self.postings_dict:
+            return []
+        # indeed term_id is termId
+        self.index_file.seek(self.postings_dict[term_id][0])
+        return self.postings_encoding.decode(self.index_file.read(self.postings_dict[term_id][2]))
 
         ### End your code
