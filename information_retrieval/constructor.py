@@ -148,8 +148,7 @@ class BSBIIndex:
             An instance of InvertedIndexWriter object into which each merged
             postings list is written out one at a time
         """
-        ### Begin your code
-
+        # Begin your code
         postings_lists = {}
 
         for index in indices:
@@ -159,7 +158,7 @@ class BSBIIndex:
                 postings_lists[term_id].extend(postings)
         for term_id, postings in postings_lists.items():
             merged_index.append(term_id, postings)
-        ### End your code
+        # End your code
 
     def retrieve(self, query: AnyStr):
         """
@@ -212,9 +211,9 @@ def sorted_intersect(list1: List[Any], list2: List[Any]):
     List[Comparable]
         Sorted intersection
     """
-    ### Begin your code
-
-    ### End your code
+    # Begin your code
+    # Didn't need this!
+    # End your code
 
 
 if __name__ == "__main__":

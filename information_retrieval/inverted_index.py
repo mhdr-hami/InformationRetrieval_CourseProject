@@ -147,14 +147,14 @@ class InvertedIndexIterator(InvertedIndex):
         index file. In particular, you should not try to maintain the full
         index file in memory.
         """
-        ### Begin your code
+        # Begin your code
         term_id = self.term_iter.__next__()
         self.index_file.seek(self.postings_dict[term_id][0])
         encoded_postings = self.index_file.read(self.postings_dict[term_id][2])
         postings_list = self.postings_encoding.decode(encoded_postings)
 
         return term_id, postings_list
-        ### End your code
+        # End your code
 
     def delete_from_disk(self):
         """Marks the index for deletion upon exit. Useful for temporary indices
@@ -184,11 +184,10 @@ class InvertedIndexMapper(InvertedIndex):
         I.e., it should only have to read the bytes from the index file
         corresponding to the postings list for the requested term.
         """
-        ### Begin your code
+        # Begin your code
         if term_id not in self.postings_dict:
             return []
         # indeed term_id is termId
         self.index_file.seek(self.postings_dict[term_id][0])
         return self.postings_encoding.decode(self.index_file.read(self.postings_dict[term_id][2]))
-
-        ### End your code
+        # End your code

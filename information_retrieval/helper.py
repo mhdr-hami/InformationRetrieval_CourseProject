@@ -19,13 +19,13 @@ class IdMap:
         """Returns the id corresponding to a string (`s`).
         If `s` is not in the IdMap yet, then assigns a new id and returns the new id.
         """
-        ### Begin your code
+        # Begin your code
         if s not in self.str_to_id:
             self.str_to_id[s] = len(self.id_to_str)
             self.id_to_str.append(s)
             
         return self.str_to_id[s]
-        ### End your code
+        # End your code
 
     def __getitem__(self, key):
         """If `key` is a integer, use _get_str;
@@ -36,6 +36,7 @@ class IdMap:
             return self._get_id(key)
         else:
             raise TypeError
+
 
 if __name__ == '__main__':
     testIdMap = IdMap()
