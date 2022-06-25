@@ -133,9 +133,9 @@ class InvertedIndexIterator(InvertedIndex):
     def _initialization_hook(self):
         """Use this function to initialize the iterator
         """
-        ### Begin your code
+        # Begin your code
         # already initialized (in parent class)
-        ### End your code
+        # End your code
 
     def __iter__(self):
         return self
